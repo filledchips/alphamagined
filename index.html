@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>h Cipher</title>
+<style>
+    /* Use system default font */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-color: #f0f0f0;
+        color: #222;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    /* Container */
+    .container {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        width: 90%;
+        max-width: 500px;
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 1.5rem;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007BFF;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    p {
+        margin-top: 1.5rem;
+        word-wrap: break-word;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 400px) {
+        .container {
+            padding: 1rem;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>hi</h2>
+    <input type="text" id="inputText" placeholder="Type text...">
+    <button onclick="convertText()">Convert</button>
+    <p>Result: <span id="outputText"></span></p>
+</div>
+
+<script>
+function convertText() {
+    let text = document.getElementById("inputText").value.toUpperCase();
+    let result = "";
+
+    let map = {
+        'A': '⌓','B': '⦽','C': ['⌮', 'Ʉ'],'D': 'ⵜ','E': '⏓',
+        'F': '⦵','G': '🜃','H': '⧋','I': '⬭','J': '⛀',
+        'K': 'Ʉ','L': '═','M': '◚','N': 'O','O': '͜',
+        'P': '⥭','Q': 'K','R': '⫧','S': '⌮','T': '♉️',
+        'U': 'Ψ','V': '≈','W': 'T'
+    };
+
+    for (let i = 0; i < text.length; i++) {
+        let pair = text[i] + (text[i+1] || "");
+
+        if (pair === "CH") { result += "⛀"; i++; continue; }
+        if (pair === "TH") { result += "ⵜ"; i++; continue; }
+
+        let char = text[i];
+
+        if (char === 'X') { result += "Ʉ⌮"; }
+        else if (char === 'Y') { result += "Y"; }
+        else if (map[char]) {
+            if (Array.isArray(map[char])) {
+                result += map[char][Math.floor(Math.random() * map[char].length)];
+            } else {
+                // Special handling for 'O' → ͜
+                if (map[char] === '͜') {
+                    result += " " + map[char] + "  ";
+                } else {
+                    result += map[char];
+                }
+            }
+        } else if (char === " ") {
+            result += "  "; // double space
+        } else {
+            result += char;
+        }
+    }
+
+    document.getElementById("outputText").innerText = result;
+}
+</script>
+
+</body>
+</html>
