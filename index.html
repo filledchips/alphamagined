@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>h Cipher</title>
+<title>New Alphabet Converter</title>
 <style>
-    /* Use system default font */
     body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         background-color: #f0f0f0;
@@ -17,8 +16,6 @@
         align-items: center;
         min-height: 100vh;
     }
-
-    /* Container */
     .container {
         background-color: #fff;
         padding: 2rem;
@@ -28,11 +25,7 @@
         max-width: 500px;
         text-align: center;
     }
-
-    h2 {
-        margin-bottom: 1.5rem;
-    }
-
+    h2 { margin-bottom: 1.5rem; }
     input[type="text"] {
         width: 100%;
         padding: 0.75rem;
@@ -42,7 +35,6 @@
         margin-bottom: 1rem;
         box-sizing: border-box;
     }
-
     button {
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
@@ -52,76 +44,88 @@
         color: white;
         cursor: pointer;
         transition: background-color 0.3s;
+        margin: 0 0.25rem;
     }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    p {
-        margin-top: 1.5rem;
-        word-wrap: break-word;
-        font-size: 1.1rem;
-    }
-
-    @media (max-width: 400px) {
-        .container {
-            padding: 1rem;
-        }
-    }
+    button:hover { background-color: #0056b3; }
+    p { margin-top: 1.5rem; word-wrap: break-word; font-size: 1.1rem; }
+    #copyButton { margin-top: 0.5rem; }
+    @media (max-width: 400px) { .container { padding: 1rem; } }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>hi</h2>
+    <h2>New Alphabet Converter</h2>
     <input type="text" id="inputText" placeholder="Type text...">
-    <button onclick="convertText()">Convert</button>
+    <div style="margin-bottom: 1rem;">
+        <button onclick="convertText()">Convert</button>
+        <button onclick="decodeText()">Decode</button>
+    </div>
     <p>Result: <span id="outputText"></span></p>
+    <button id="copyButton" onclick="copyOutput()">Copy</button>
 </div>
 
 <script>
+const map = {
+    'A': '⌓','B': '⦽','C': ['⌮', 'Ʉ'],'D': 'ⵜ','E': '⏓',
+    'F': '⦵','G': '🜃','H': '⧋','I': '⬭','J': '⛀',
+    'K': 'Ʉ','L': '═','M': '◚','N': '͜','O': 'O',
+    'P': '⥭','Q': 'K','R': '⫧','S': '⌮','T': '♉️',
+    'U': 'Ψ','V': '≈','W': 'T'
+};
+
 function convertText() {
     let text = document.getElementById("inputText").value.toUpperCase();
     let result = "";
 
-    let map = {
-        'A': '⌓','B': '⦽','C': ['⌮', 'Ʉ'],'D': 'ⵜ','E': '⏓',
-        'F': '⦵','G': '🜃','H': '⧋','I': '⬭','J': '⛀',
-        'K': 'Ʉ','L': '═','M': '◚','N': 'O','O': '͜',
-        'P': '⥭','Q': 'K','R': '⫧','S': '⌮','T': '♉️',
-        'U': 'Ψ','V': '≈','W': 'T'
-    };
-
     for (let i = 0; i < text.length; i++) {
         let pair = text[i] + (text[i+1] || "");
-
         if (pair === "CH") { result += "⛀"; i++; continue; }
         if (pair === "TH") { result += "ⵜ"; i++; continue; }
 
         let char = text[i];
-
         if (char === 'X') { result += "Ʉ⌮"; }
         else if (char === 'Y') { result += "Y"; }
         else if (map[char]) {
-            if (Array.isArray(map[char])) {
-                result += map[char][Math.floor(Math.random() * map[char].length)];
-            } else {
-                // Special handling for 'O' → ͜
-                if (map[char] === '͜') {
-                    result += " " + map[char] + "  ";
-                } else {
-                    result += map[char];
-                }
-            }
-        } else if (char === " ") {
-            result += "  "; // double space
-        } else {
-            result += char;
-        }
+            if (Array.isArray(map[char])) { result += map[char][Math.floor(Math.random() * map[char].length)]; }
+            else { result += map[char] === '͜' ? " " + map[char] + " " : map[char]; }
+        } else if (char === " ") { result += " "; }
+        else { result += char; }
     }
 
     document.getElementById("outputText").innerText = result;
+}
+
+function decodeText() {
+    const input = document.getElementById("outputText").innerText;
+    let reverseMap = {};
+    for (let key in map) {
+        if (Array.isArray(map[key])) map[key].forEach(sym => reverseMap[sym] = key);
+        else reverseMap[map[key]] = key;
+    }
+    reverseMap["Ʉ⌮"] = "X";
+    reverseMap["⛀"] = "CH";
+    reverseMap["ⵜ"] = "TH";
+
+    let result = "";
+    let i = 0;
+    while (i < input.length) {
+        let twoChar = input[i] + (input[i+1] || "");
+        if (reverseMap[twoChar]) { result += reverseMap[twoChar]; i += 2; continue; }
+        let char = input[i];
+        result += reverseMap[char] || char;
+        i++;
+    }
+
+    document.getElementById("outputText").innerText = result;
+}
+
+function copyOutput() {
+    const output = document.getElementById("outputText").innerText;
+    if (!output) return;
+    navigator.clipboard.writeText(output).then(() => {
+        alert("Copied to clipboard!");
+    });
 }
 </script>
 
